@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "135219097398",
+    "firebase_url": "https://onyx-silo-199918.firebaseio.com",
+    "project_id": "onyx-silo-199918",
+    "storage_bucket": "onyx-silo-199918.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:135219097398:android:e5896fc877253e61",
+        "android_client_info": {
+          "package_name": "com.example.yurig.safeband"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "135219097398-0l74k8dj5kfb3sac5h81qaaesk176h3u.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAWirWQFf_FEBkylLmurguA74mQMfyGMyg"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
