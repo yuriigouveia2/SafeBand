@@ -33,10 +33,15 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import static java.lang.Thread.sleep;
 
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback {
 
@@ -112,16 +117,35 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         locationListener = new LocationListener(){
 
             @Override
-            public void onLocationChanged(Location location) {
+            public void onLocationChanged(final Location location) {
                 localizacao = new Localizacao(location.getLatitude(), location.getLongitude());
                 listLoc.add(localizacao);
                 contatos = new Contatos(listLoc);
 
-                //SALVAR AQUI A LOCALIZACAO
+                //VERIFICA STATUS DA FLAGSAFE
+                fbConfig.getMref().addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        //VERIFICA SE ESTA EM PERIGO
+                        if (dataSnapshot.child("cliente1").child("flagSafe").getValue(boolean.class) == true){
+                            fbConfig.setLocalizacao("cliente2", location.getLatitude(), location.getLongitude());
 
-                LatLng sydney = new LatLng(location.getLatitude(), location.getLongitude());
-                mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-                mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+                            //MOSTRAR LOCALIZAÇAO NO MAPA
+                            LatLng sydney = new LatLng(location.getLatitude(), location.getLongitude());
+                            mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
+                            mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+
+                            Log.d("LOG", "onDataChange: "+location.getLatitude());
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+
+
             }
 
             @Override
