@@ -41,6 +41,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static com.google.android.gms.maps.CameraUpdateFactory.newLatLng;
 import static java.lang.Thread.sleep;
 
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback {
@@ -128,12 +129,12 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         //VERIFICA SE ESTA EM PERIGO
                         if (dataSnapshot.child("cliente1").child("flagSafe").getValue(boolean.class) == true){
-                            fbConfig.setLocalizacao("cliente2", location.getLatitude(), location.getLongitude());
+                            fbConfig.setLocalizacao("cliente1", location.getLatitude(), location.getLongitude());
 
                             //MOSTRAR LOCALIZAÇAO NO MAPA
                             LatLng sydney = new LatLng(location.getLatitude(), location.getLongitude());
                             mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-                            mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+                            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(sydney,16.0f));
 
                             Log.d("LOG", "onDataChange: "+location.getLatitude());
                         }

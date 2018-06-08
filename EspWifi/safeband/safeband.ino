@@ -18,6 +18,7 @@ externo com o aplicativo por meio firebase.
 #define WIFI_PASSWORD "Cdt@123."
 int botton = 13;
 int val = 0;
+bool flagVal = false;
 
 void setup() {
   Serial.begin(9600);
@@ -34,14 +35,15 @@ void setup() {
   Serial.println(WiFi.localIP());
 
   Firebase.begin(FIREBASE_HOST);
-  Firebase.set("clientes/cliente2/flagSafe", false);
+  Firebase.set("clientes/cliente1/flagSafe", flagVal);
 }
 
 void loop() {
   val = digitalRead(botton); 
+  
   if (val == LOW) {
-  Firebase.set("clientes/cliente2/flagSafe", true);
+  Firebase.set("clientes/cliente1/flagSafe", !flagVal);
   } else {
-    Firebase.set("clientes/cliente2/flagSafe", false);
+    Firebase.set("clientes/cliente1/flagSafe", flagVal);
   }
 }

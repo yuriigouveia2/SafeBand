@@ -27,7 +27,7 @@ public class MinhaContaActivity extends AppCompatActivity {
 
 
 
-        new FirebaseConfig().getMref().child("cliente2").addListenerForSingleValueEvent(new ValueEventListener() {
+        new FirebaseConfig().getMref().child("cliente1").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 nome.setText(dataSnapshot.child("nome").getValue(String.class));
