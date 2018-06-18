@@ -10,14 +10,8 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Build;
 import android.support.annotation.NonNull;
-import android.support.annotation.RequiresApi;
-import android.support.design.internal.BottomNavigationMenu;
-import android.support.design.internal.BottomNavigationMenuView;
 import android.support.design.widget.BottomNavigationView;
-import android.support.design.widget.BottomSheetBehavior;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -26,22 +20,18 @@ import android.view.MenuItem;
 
 import com.example.yurig.aparencia.Firebase.Contatos;
 import com.example.yurig.aparencia.Firebase.FirebaseConfig;
-import com.example.yurig.aparencia.Firebase.Localizacao;
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
-import static com.google.android.gms.maps.CameraUpdateFactory.newLatLng;
 import static java.lang.Thread.sleep;
 
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback {
@@ -50,9 +40,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private LocationManager locationManager;
     private LocationListener locationListener;
     private FirebaseConfig fbConfig;
-    private Localizacao localizacao;
+    private LatLng localizacao;
     private Contatos contatos;
-    private List<Localizacao> listLoc;
+    private List<LatLng> listLoc;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -113,13 +103,13 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 
         fbConfig = new FirebaseConfig();
-        listLoc = new ArrayList<Localizacao>();
+        listLoc = new ArrayList<>();
 
         locationListener = new LocationListener(){
 
             @Override
             public void onLocationChanged(final Location location) {
-                localizacao = new Localizacao(location.getLatitude(), location.getLongitude());
+                localizacao = new LatLng(location.getLatitude(), location.getLongitude());
                 listLoc.add(localizacao);
                 contatos = new Contatos(listLoc);
 
@@ -129,14 +119,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         //VERIFICA SE ESTA EM PERIGO
                         if (dataSnapshot.child("cliente1").child("flagSafe").getValue(boolean.class) == true){
-                            fbConfig.setLocalizacao("cliente1", location.getLatitude(), location.getLongitude());
+                            fbConfig.saveNewLoc("cliente1", localizacao);
 
-                            //MOSTRAR LOCALIZAÇAO NO MAPA
-                            LatLng sydney = new LatLng(location.getLatitude(), location.getLongitude());
-                            mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-                            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(sydney,16.0f));
-
-                            Log.d("LOG", "onDataChange: "+location.getLatitude());
+                            fbConfig.getArrayLoc("cliente1", mMap);
                         }
                     }
 
