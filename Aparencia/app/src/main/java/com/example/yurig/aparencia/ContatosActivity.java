@@ -65,10 +65,6 @@ public class ContatosActivity extends AppCompatActivity {
                         Intent intent = new Intent(ContatosActivity.this, MainActivity.class);
                         startActivity(intent);
                         return true;
-                    /*case R.id.navigation_mapa:
-                        finish();
-                        startActivity(new Intent(ContatosActivity.this, MapsActivity.class));
-                        return true;*/
                     case R.id.navigation_contatos:
 
                         return true;
@@ -86,8 +82,8 @@ public class ContatosActivity extends AppCompatActivity {
 
         mref.child("cliente1").child("friendlist").addValueEventListener(new ValueEventListener() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+            public void onDataChange(final DataSnapshot dataSnap) {
+                for (DataSnapshot snapshot : dataSnap.getChildren()) {
                     nomeAmigo = snapshot.getKey();
                     lista.add(nomeAmigo);
 
@@ -101,7 +97,7 @@ public class ContatosActivity extends AppCompatActivity {
                             listView.setAdapter(arrayAdapter);
 
                             if (dataSnapshot.child("flagSafe").getValue(boolean.class)) {
-                                nBuilder = new NotificationCompat.Builder(getApplicationContext())
+                                nBuilder = new NotificationCompat.Builder(getApplicationContext(), "1")
                                         .setSmallIcon(R.mipmap.perigo)
                                         .setColor(Color.rgb(220, 30, 30))
                                         .setContentTitle("SafeBand")
