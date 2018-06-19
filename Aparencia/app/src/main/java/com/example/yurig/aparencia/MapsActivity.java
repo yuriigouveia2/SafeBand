@@ -17,6 +17,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.example.yurig.aparencia.Firebase.Contatos;
 import com.example.yurig.aparencia.Firebase.FirebaseConfig;
@@ -36,6 +37,8 @@ import static java.lang.Thread.sleep;
 
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback {
 
+    private Bundle bundle;
+    private String nomeAmigo;
     private GoogleMap mMap;
     private LocationManager locationManager;
     private LocationListener locationListener;
@@ -66,9 +69,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                         Intent intent = new Intent(MapsActivity.this, MainActivity.class);
                         startActivity(intent);
                         return true;
-                    case R.id.navigation_mapa:
+                    /*case R.id.navigation_mapa:
 
-                        return true;
+                        return true;*/
                     case R.id.navigation_contatos:
                         finish();
                         startActivity(new Intent(MapsActivity.this, ContatosActivity.class));
@@ -99,6 +102,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     @SuppressLint("MissingPermission")
     @Override
     public void onMapReady(GoogleMap googleMap) {
+        bundle = getIntent().getExtras();
+        nomeAmigo = bundle.getString("Nome");
+        Toast.makeText(getApplicationContext(), "Localização de " + nomeAmigo,
+                Toast.LENGTH_LONG).show();
+
         mMap = googleMap;
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 
@@ -117,11 +125,14 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 fbConfig.getMref().addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        //VERIFICA SE ESTA EM PERIGO
-                        if (dataSnapshot.child("cliente1").child("flagSafe").getValue(boolean.class) == true){
+                        //SALVA NA BASE CASO EU ESTEJA EM PERIGO
+                        if (dataSnapshot.child("cliente1").child("flagSafe").getValue(boolean.class)){
                             fbConfig.saveNewLoc("cliente1", localizacao);
+                        }
 
-                            fbConfig.getArrayLoc("cliente1", mMap);
+                        //VERIFICA SE AMIGO ESTA EM PERIGO
+                        if (dataSnapshot.child(nomeAmigo).child("flagSafe").getValue(boolean.class)){
+                            fbConfig.getArrayLoc(nomeAmigo, mMap);
                         }
                     }
 

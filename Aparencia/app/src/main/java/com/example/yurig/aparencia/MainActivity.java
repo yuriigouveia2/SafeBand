@@ -21,6 +21,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.yurig.aparencia.Firebase.FirebaseConfig;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -49,9 +50,9 @@ public class MainActivity extends AppCompatActivity {
             switch (item.getItemId()) {
                 case R.id.navigation_home:
                     return true;
-                case R.id.navigation_mapa:
+                /*case R.id.navigation_mapa:
                     startActivity(new Intent(MainActivity.this, MapsActivity.class));
-                    return true;
+                    return true;*/
                 case R.id.navigation_contatos:
                     startActivity(new Intent(MainActivity.this, ContatosActivity.class));
                     return true;
@@ -82,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
         button = (Button) findViewById(R.id.muda_status);
 
         database = FirebaseDatabase.getInstance();
-        mref = database.getReferenceFromUrl("https://onyx-silo-199918.firebaseio.com/").child("clientes").child("cliente1");
+        mref = new FirebaseConfig().getMref().child("cliente1");
 
         mref.addValueEventListener(new ValueEventListener() {
             @Override
@@ -91,15 +92,16 @@ public class MainActivity extends AppCompatActivity {
 
                 if(!dataSnapshot.child("flagSafe").getValue(boolean.class)){
                     imageView.setImageResource(R.mipmap.seguro);
-                    imageView.setColorFilter(Color.GREEN);
+                    imageView.setColorFilter(Color.rgb(30,220,30));
                 }else {
                     imageView.setImageResource(R.mipmap.perigo);
-                    imageView.setColorFilter(Color.RED);
+                    imageView.setColorFilter(Color.rgb(220,30,30));
 
                     button.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
                             mref.child("flagSafe").setValue(false);
+                            mref.child("localizacao").setValue(null);
                         }
                     });
                 }

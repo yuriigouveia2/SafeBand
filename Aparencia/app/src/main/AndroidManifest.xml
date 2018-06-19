@@ -49,7 +49,6 @@
         <activity
             android:name=".MapsActivity"
             android:label="@string/title_activity_maps" />
-        <activity android:name=".MinhaContaActivity" />
         <activity android:name=".AjudaActivity" />
         <activity
             android:name=".ContatosActivity"

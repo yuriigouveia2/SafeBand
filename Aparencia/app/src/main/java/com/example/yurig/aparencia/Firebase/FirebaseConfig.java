@@ -9,6 +9,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.firebase.database.DataSnapshot;
@@ -23,6 +24,7 @@ import java.util.List;
 public class FirebaseConfig {
     private FirebaseDatabase database;
     private DatabaseReference mref;
+    private Marker marker;
 
     //NO CONSTRUTOR AS CONFIGURAÇOES INICIAIS DO FIREBASE SAO DEFINIDAS
     public FirebaseConfig(){
@@ -56,37 +58,32 @@ public class FirebaseConfig {
                         LatLng ponto = new LatLng(lat, lon);
 
                         if(ponto != null) {
+                            map.clear();
                             loc.add(ponto);
                             polyOpt.add(ponto);
+
+                            if(loc.size() > 0) {
+                                //Define pontos da linha a ser tracejada
+                                map.addPolyline(polyOpt);
+                                //Marcador na posiçao original, de cor verde. Sempre sobrescreve ao pegar novos pontos.
+                                map.addMarker(new MarkerOptions().position(polyOpt.getPoints().get(0))
+                                        .icon(BitmapDescriptorFactory
+                                                .defaultMarker(BitmapDescriptorFactory.HUE_GREEN)))
+                                        .setTitle("Ponto de partida");
+
+
+                                //Adiciona marcador na ultima posiçao traçada, de cor vermelha
+                                if(loc.size() >= 1){
+                                    map.addMarker(new MarkerOptions().position(polyOpt.getPoints().get(loc.size()-1))
+                                            .icon(BitmapDescriptorFactory
+                                                    .defaultMarker(BitmapDescriptorFactory.HUE_RED)))
+                                            .setTitle("Localização atual");;
+                                }
+
+                                //Da zoom de fator 16.0 na camera do mapa
+                                map.animateCamera(CameraUpdateFactory.newLatLngZoom(polyOpt.getPoints().get(loc.size()-1), 16.0f));
+                            }
                         }
-                }
-
-                if(loc.size() > 0) {
-                    //Define pontos da linha a ser tracejada
-                    map.addPolyline(polyOpt);
-                    //Marcador na posiçao original, de cor verde. Sempre sobrescreve ao pegar novos pontos.
-                    map.addMarker(new MarkerOptions().position(polyOpt.getPoints().get(0))
-                        .icon(BitmapDescriptorFactory
-                                .defaultMarker(BitmapDescriptorFactory.HUE_GREEN)))
-                                    .setTitle("Ponto de partida");
-                    
-                    //Adiciona marcador na ultima posiçao traçada, de cor vermelha
-                   /* if(loc.size() == 1){
-                        map.addMarker(new MarkerOptions().position(polyOpt.getPoints().get(loc.size()-1))
-                                .icon(BitmapDescriptorFactory
-                                        .defaultMarker(BitmapDescriptorFactory.HUE_RED)));
-                    }
-
-                    //Remove marcador da penultima posiçao, para depois colocar na ultima
-                    else if(loc.size() > 1){
-                        map.addMarker(new MarkerOptions().position(polyOpt.getPoints().get(loc.size()-1))).remove();
-                        /*map.addMarker(new MarkerOptions().position(polyOpt.getPoints().get(loc.size()-1))
-                                .icon(BitmapDescriptorFactory
-                                        .defaultMarker(BitmapDescriptorFactory.HUE_RED)));
-                    }*/
-
-                    //Da zoom de fator 16.0 na camera do mapa
-                    map.animateCamera(CameraUpdateFactory.newLatLngZoom(polyOpt.getPoints().get(0), 16.0f));
                 }
             }
 
