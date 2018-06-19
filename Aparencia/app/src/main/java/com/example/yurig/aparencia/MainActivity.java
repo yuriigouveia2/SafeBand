@@ -1,6 +1,7 @@
 package com.example.yurig.aparencia;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -14,9 +15,17 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -27,8 +36,11 @@ public class MainActivity extends AppCompatActivity {
 
     private ArrayList<String> arrayList;
     private ArrayAdapter<String> arrayAdapter;
-    private ListView listView;
+    private Button button;
     private ImageView imageView;
+    private TextView textView;
+    private FirebaseDatabase database;
+    private DatabaseReference mref;
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
@@ -59,46 +71,44 @@ public class MainActivity extends AppCompatActivity {
         MenuItem menuItem = menu.getItem(0);
         menuItem.setChecked(true);
 
-        listView = (ListView) findViewById(R.id.list_view);
-        imageView = (ImageView) findViewById(imagem);
         arrayList = new ArrayList<String>();
         arrayList.add("Minha Conta");
         arrayList.add("Ajuda");
         arrayAdapter = new ArrayAdapter<String>(MainActivity.this, R.layout.list,R.id.item, arrayList);
 
-        listView.setAdapter(arrayAdapter);
-        listView.setBackgroundColor(getResources().getColor(R.color.colorPrimaryLight));
+        //ADD VIEW PAGER
+        imageView = (ImageView) findViewById(R.id.img_status);
+        textView = (TextView) findViewById(R.id.nome);
+        button = (Button) findViewById(R.id.muda_status);
 
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        database = FirebaseDatabase.getInstance();
+        mref = database.getReferenceFromUrl("https://onyx-silo-199918.firebaseio.com/").child("clientes").child("cliente1");
+
+        mref.addValueEventListener(new ValueEventListener() {
             @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                switch (i){
-                    case 0:
-                        startActivity(new Intent(MainActivity.this, MinhaContaActivity.class));
-                        break;
-                    case 1:
-                        startActivity(new Intent(MainActivity.this, AjudaActivity.class));
-                        break;
+            public void onDataChange(final DataSnapshot dataSnapshot) {
+                textView.setText("Usuário: " + dataSnapshot.child("nome").getValue().toString());
+
+                if(!dataSnapshot.child("flagSafe").getValue(boolean.class)){
+                    imageView.setImageResource(R.mipmap.seguro);
+                    imageView.setColorFilter(Color.GREEN);
+                }else {
+                    imageView.setImageResource(R.mipmap.perigo);
+                    imageView.setColorFilter(Color.RED);
+
+                    button.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            mref.child("flagSafe").setValue(false);
+                        }
+                    });
                 }
             }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
         });
-
-        //CustomListAdapter adapter = new CustomListAdapter(this, arrayList, R.layout.list);
-        /*
-        Integer[] img = {R.mipmap.meus_dados, R.mipmap.ajuda};
-        Map<String, Integer> map = new HashMap<>();
-        map.put("Minha Conta", img[0]);
-        map.put("Ajuda", img[1]);
-        listView = (ListView) findViewById(R.id.list_view);
-        imageView = (ImageView) findViewById(imagem);
-        arrayList = new ArrayList<Map<String,Integer>>();
-        arrayList.add(map);
-        arrayAdapter = new SimpleAdapter(MainActivity.this, arrayList, R.layout.list, new String[]{"Minha Conta","Ajuda"}, new int[] {R.id.imagem, R.id.item});
-
-        listView.setAdapter(arrayAdapter);
-        listView.setBackgroundColor(getResources().getColor(R.color.colorPrimaryLight));
-         */
-
-        //ADD VIEW PAGER
     }
 }

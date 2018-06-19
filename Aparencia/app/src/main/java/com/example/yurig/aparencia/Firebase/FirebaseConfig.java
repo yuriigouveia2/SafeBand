@@ -69,8 +69,7 @@ public class FirebaseConfig {
                         .icon(BitmapDescriptorFactory
                                 .defaultMarker(BitmapDescriptorFactory.HUE_GREEN)))
                                     .setTitle("Ponto de partida");
-
-
+                    
                     //Adiciona marcador na ultima posiçao traçada, de cor vermelha
                    /* if(loc.size() == 1){
                         map.addMarker(new MarkerOptions().position(polyOpt.getPoints().get(loc.size()-1))
